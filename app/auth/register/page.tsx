@@ -1,10 +1,10 @@
 import React from 'react';
-import SignUpForm from "@/app/ui/auth/sign-up-form";
+import RegisterForm from "@/app/ui/auth/register-form";
 
 const SignUpPage = () => {
     return (
         <div className="flex flex-col">
-            <SignUpForm/>
+            <RegisterForm/>
         </div>
     );
 };

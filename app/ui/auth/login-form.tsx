@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, {useState, useTransition} from 'react';
 import { CardWrapper } from '@/app/ui/auth/card-wrapper';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,12 +15,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
-  useFormField,
 } from '@/components/ui/form';
-import { login } from "@/actions/login";
+import { login } from '@/actions/login';
+import { LoaderCircle } from 'lucide-react';
+import {useToast} from "@/components/ui/use-toast";
+import FormError from "@/app/ui/auth/form-error";
+import FormSuccess from "@/app/ui/auth/form-success";
+import {deleteAdRate} from "@/actions/ad-rate";
 
 const LoginForm = () => {
+  const [ isPending, startTransition ] = useTransition();
+  const [ error, setError ] = useState<string | undefined>('');
+  const [ success, setSuccess ] = useState<string | undefined>('');
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -28,9 +34,19 @@ const LoginForm = () => {
       password: '',
     },
   });
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-    login(values)
-  }
+  const { toast } = useToast();
+  const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
+    setError('');
+    setSuccess('');
+    startTransition( ()=> {
+      login(values).then((data ) => {
+        setError(data.error)
+        setSuccess(data.success)
+      })
+    })
+
+  };
+
   return (
     <CardWrapper
       headerLabel={'Sign in'}
@@ -69,13 +85,23 @@ const LoginForm = () => {
                       placeholder="Password"
                     />
                   </FormControl>
-                  <FormMessage/>
+                  <FormMessage />
                 </FormItem>
               )}
             />
-
           </div>
-            <Button type="submit" className="w-full" >Login</Button>
+          <FormError message={error} />
+          <FormSuccess message={success} />
+          {form.formState.isSubmitting ? (
+            <Button type="submit" className="w-full" disabled>
+              <LoaderCircle className="animate-spin"/>
+              Login
+            </Button>
+          ) : (
+            <Button type="submit" className="w-full">
+              Login
+            </Button>
+          )}
         </form>
       </Form>
     </CardWrapper>

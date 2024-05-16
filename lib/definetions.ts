@@ -18,3 +18,20 @@ export type RowIncludeAll = Row & {
   position: PositionIncludeDemoList;
   cells: CellIncludeHeaders[];
 };
+
+export type Data = {
+  id: string;
+  website: {
+    name: string;
+  };
+  position: {
+    name: string;
+    dimension: string;
+    platform: string;
+    demoList: Demo[];
+  };
+  cells: {
+    headerId: string;
+    value: string;
+  }[];
+};
