@@ -4,6 +4,8 @@ import { PrismaClient } from "@prisma/client"
 import Credentials from "@auth/core/providers/credentials";
 import {ZodError} from "zod";
 import {LoginSchema, RegisterSchema} from "@/schemas";
+import {saltAndHashPassword} from "@/lib/utils";
+import {createUserInDb, getUserFromDb} from "@/lib/data";
 
 
 const prisma = new PrismaClient()
@@ -17,6 +19,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 email: {},
                 password: {},
             },
+// @ts-ignore
+
             authorize: async (credentials) => {
                 try {
                     let user = null
@@ -27,7 +31,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                         // logic to salt and hash password
                         const pwHash = saltAndHashPassword(password)
                         // logic to verify if user exists
-                        user = await getUserFromDb(email, pwHash)
+                        user = await getUserFromDb(username, pwHash)
                     } else if (credentials.type === 'register') {
                         const { email, username, password } = await RegisterSchema.parseAsync(credentials)
                         // logic to salt and hash password

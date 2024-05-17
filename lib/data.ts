@@ -1,21 +1,19 @@
-import {Header, Platform, PrismaClient, Type} from '@prisma/client';
-import {RowIncludeAll, TypeIncludeHeaders} from "@/lib/definetions";
-
+import { Platform, PrismaClient} from '@prisma/client';
+import { TypeIncludeHeaders} from "@/lib/definetions";
+import { prisma } from '@/lib/prisma';
 export async function fetchAdRateTypesCount(): Promise<number> {
-  const prisma = new PrismaClient();
+
   try {
     return await prisma.type.count();
   } catch (e) {
     console.error(e);
     console.log('Failed to fetch ad rate types count');
     return 0;
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
 export async function fetchAllType(): Promise<(TypeIncludeHeaders)[]> {
-  const prisma = new PrismaClient();
+
   try {
     return await prisma.type.findMany(
         {
@@ -28,14 +26,12 @@ export async function fetchAllType(): Promise<(TypeIncludeHeaders)[]> {
     console.error(e);
     console.log('Failed to fetch type');
     return [];
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
 //fetch type by typeid
 export async function fetchTypeById(typeid : string): Promise<TypeIncludeHeaders | null> {
-  const prisma = new PrismaClient();
+
   try {
     return await prisma.type.findUnique({
       where: {
@@ -49,14 +45,12 @@ export async function fetchTypeById(typeid : string): Promise<TypeIncludeHeaders
     console.error(e);
     console.log('Failed to fetch type by id');
     return null;
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
 
 export async function fetchRowWithTypeId(typeid : string) {
-  const prisma = new PrismaClient();
+
   try {
     return await prisma.row.findMany({
       where: {
@@ -80,13 +74,11 @@ export async function fetchRowWithTypeId(typeid : string) {
     console.error(e);
     console.log('Failed to fetch ad rate with type');
     return [];
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
 export async function deleteRowAndCells(rowId : string) {
-  const prisma = new PrismaClient();
+
   try {
     // Delete cells that belong to the row
     await prisma.cell.deleteMany({
@@ -105,8 +97,6 @@ export async function deleteRowAndCells(rowId : string) {
     console.error(e);
     console.log('Failed to delete row and cells');
     return null;
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -118,7 +108,7 @@ export async function addAdRate(data: {
   demoList: { display: string; url: string }[];
   [key: string]: any;
 }): Promise<void> {
-  const prisma = new PrismaClient();
+
   try {
     // Check if the website already exists, if not, create it
     let website = await prisma.website.findUnique({
@@ -183,7 +173,65 @@ export async function addAdRate(data: {
   } catch (e) {
     console.error(e);
     console.log('Failed to add ad rate');
-  } finally {
-    await prisma.$disconnect();
+  }
+}
+
+export async function getUserFromDb(username: string, password: string) {
+
+  try {
+    return await prisma.user.findMany({
+      where: {
+        username: username,
+      },
+
+    });
+  } catch (e) {
+    console.error(e);
+    console.log('Failed to get user from db');
+    return null;
+  }
+}
+
+export async function createUserInDb(email: string, username: string, password: string) {
+      try {
+     return await prisma.user.create({
+        data: {
+          email: email,
+          username: username,
+          password: password,
+        },
+     });
+      } catch (e) {
+     console.error(e);
+     console.log('Failed to create user in db');
+     return null;
+      }
+}
+
+export async function getUserByEmail(email: string) {
+  try {
+    return await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+  } catch (e) {
+    console.error(e);
+    console.log('Failed to get user by email');
+    return null;
+  }
+}
+
+export async function getUserByUsername(username: string) {
+  try {
+    return await prisma.user.findUnique({
+      where: {
+        username: username,
+      },
+    });
+  } catch (e) {
+    console.error(e);
+    console.log('Failed to get user by username');
+    return null;
   }
 }
