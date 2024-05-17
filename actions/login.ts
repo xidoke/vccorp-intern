@@ -3,13 +3,14 @@
 import {LoginSchema, RegisterSchema} from '@/schemas';
 import bcrypt from "bcryptjs";
 import {createUserInDb, getUserByEmail, getUserByUsername} from "@/lib/data";
+import {revalidatePath} from "next/cache";
+import {redirect} from "next/navigation";
 export const login = async (values: any) => {
   const validateFields = LoginSchema.safeParse(values);
 
   if (!validateFields.success) {
     return { error: 'Invalid fields' };
   }
-
   return { success: 'success' };
 };
 
@@ -32,6 +33,5 @@ export const register = async (values: any) => {
     await createUserInDb(email, username, hashedPassword)
 
     // TODO: Send email verification
-
     return { success: 'User created' };
 }

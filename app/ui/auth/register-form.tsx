@@ -21,8 +21,10 @@ import { LoaderCircle } from 'lucide-react';
 import {useToast} from "@/components/ui/use-toast";
 import FormError from "@/app/ui/auth/form-error";
 import FormSuccess from "@/app/ui/auth/form-success";
+import {redirect, useRouter} from "next/navigation";
 
 const RegisterForm = () => {
+    const router = useRouter();
     const [ isPending, startTransition ] = useTransition();
     const [ error, setError ] = useState<string | undefined>('');
     const [ success, setSuccess ] = useState<string | undefined>('');
@@ -42,6 +44,9 @@ const RegisterForm = () => {
             register(values).then((data ) => {
                 setError(data.error)
                 setSuccess(data.success)
+                if (data.success) {
+                    router.push('/login')
+                }
             })
         })
 
@@ -50,7 +55,7 @@ const RegisterForm = () => {
     return (
         <CardWrapper
             headerLabel={'Sign up'}
-            backButtonHref={'/auth/login'}
+            backButtonHref={'/login'}
             showSocial={false}
             backButtonLabel="already have an account? Sign in"
             description={'create an account'}

@@ -30,52 +30,9 @@ import { createAdRate } from '@/actions/ad-rate';
 import SubmitButton from '@/components/submit-button';
 import { useToast } from '@/components/ui/use-toast';
 import {revalidatePath} from "next/cache";
+import {usePathname, useRouter} from "next/navigation";
+import {createFormSchema} from "@/schemas";
 
-function createFormSchema(selectedType: TypeIncludeHeaders | null) {
-  let schema: any = z.object({
-    website: z.string().min(1, 'Website is required'),
-    position: z.string().min(1, 'Position is required'),
-    dimension: z.string().min(1, 'Dimension is required'),
-    platform: z.string().default('PC'),
-    demoList: z
-      .array(
-        z.object({
-          url: z.string().url('Invalid URL format'),
-          display: z.string().min(1, 'Display text is required'),
-        }),
-      )
-      .optional(),
-    typeId: z.string().min(1, 'Type ID is required'), // Ensure typeId is included and required
-  });
-
-  if (selectedType) {
-    let dynamicFields: any = {};
-    selectedType.headers.forEach((header) => {
-      switch (header.datatype) {
-        case 'string':
-          dynamicFields[header.id] = z
-            .string()
-            .min(1, `${header.display} is required`);
-          break;
-        case 'number':
-          dynamicFields[header.id] = z.coerce
-            .number()
-            .min(0, `${header.display} must be a positive number`);
-          break;
-        case 'boolean':
-          dynamicFields[header.id] = z.coerce.boolean();
-          break;
-        default:
-          dynamicFields[header.id] = z
-            .string()
-            .min(1, `${header.display} is required`);
-      }
-    });
-    schema = schema.extend(dynamicFields);
-  }
-
-  return schema;
-}
 
 export function AddAdRateForm({
   types,
@@ -84,6 +41,7 @@ export function AddAdRateForm({
   types: TypeIncludeHeaders[];
   initType?: TypeIncludeHeaders;
 }) {
+
   const [selectedType, setSelectedType] = useState<TypeIncludeHeaders | null>(
     initType ? initType : types[0],
   );
@@ -126,6 +84,7 @@ export function AddAdRateForm({
         title: 'Success',
         description: 'Data added successfully',
       });
+      window.location.reload();
     } catch (error) {
       console.error('Failed to add data:', error);
       toast({
@@ -133,8 +92,6 @@ export function AddAdRateForm({
         description: 'Failed to add data',
         variant: 'destructive',
       });
-    } finally {
-
     }
   };
 

@@ -50,7 +50,7 @@ const LoginForm = () => {
   return (
     <CardWrapper
       headerLabel={'Sign in'}
-      backButtonHref={'/auth/register'}
+      backButtonHref={'/register'}
       showSocial
       backButtonLabel="don't have an account? Sign up"
       description={'to continue to VCCorp'}

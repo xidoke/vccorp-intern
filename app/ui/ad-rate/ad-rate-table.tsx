@@ -18,7 +18,7 @@ const AdRateTable = ({ data, type }: AdRateTableProps) => {
   const defaultColumns: ColumnDef<Data, any>[] = [
     columnHelper.display({
       id: 'actions',
-      cell: ({ row }) => <ActionMenu item={row.original} />,
+      cell: ({ row }) => <ActionMenu item={row.original} type={type} />,
     }),
     columnHelper.accessor('website.name', {
       id: 'website',
