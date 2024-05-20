@@ -263,7 +263,7 @@ export async function editAdRate(data: {
 
 export async function getUserFromDb(username: string) {
     try {
-        return await db.user.findUnique({
+        return await db.user.findFirst({
             where: {
                 username: username,
             },
