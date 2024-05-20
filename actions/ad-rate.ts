@@ -1,7 +1,8 @@
 'use server';
 
-import { deleteRowAndCells } from '@/lib/data';
+import {deleteRowAndCells, editAdRate} from '@/lib/data';
 import { addAdRate } from '@/lib/data';
+import {revalidatePath} from "next/cache";
 
 export const deleteAdRate = async (item: any) => {
   try {
@@ -22,3 +23,14 @@ export const createAdRate = async (data: any) => {
     console.log('Failed to create ad rate');
   }
 };
+
+export const updateAdRate = async (data: any) => {
+  try {
+    await editAdRate(data);
+    revalidatePath('/home');
+    console.log(`Ad rate id ${data.id} updated`);
+    } catch (e) {
+    console.error(e);
+    console.log('Failed to update ad rate');
+  }
+}

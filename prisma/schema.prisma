@@ -52,6 +52,8 @@ model Cell {
   value    String
   rowId    String @db.ObjectId
   row      Row    @relation(fields: [rowId], references: [id])
+
+  @@unique([headerId, rowId])
 }
 
 model Demo {

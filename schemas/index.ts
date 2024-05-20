@@ -72,3 +72,49 @@ export function createFormSchema(selectedType: TypeIncludeHeaders | null) {
 
   return schema;
 }
+export function createEditFormSchema(selectedType: TypeIncludeHeaders | null) {
+  let schema: any = z.object({
+    id: z.string().min(1, 'ID is required'),
+    website: z.string().min(1, 'Website is required'),
+    position: z.string().min(1, 'Position is required'),
+    dimension: z.string().min(1, 'Dimension is required'),
+    platform: z.string().default('PC'),
+    demoList: z
+        .array(
+            z.object({
+              url: z.string().url('Invalid URL format'),
+              display: z.string().min(1, 'Display text is required'),
+            }),
+        )
+        .optional(),
+    typeId: z.string().min(1, 'Type ID is required'), // Ensure typeId is included and required
+  });
+
+  if (selectedType) {
+    let dynamicFields: any = {};
+    selectedType.headers.forEach((header) => {
+      switch (header.datatype) {
+        case 'string':
+          dynamicFields[header.id] = z
+              .string()
+              .min(1, `${header.display} is required`);
+          break;
+        case 'number':
+          dynamicFields[header.id] = z.coerce
+              .number()
+              .min(0, `${header.display} must be a positive number`);
+          break;
+        case 'boolean':
+          dynamicFields[header.id] = z.coerce.boolean();
+          break;
+        default:
+          dynamicFields[header.id] = z
+              .string()
+              .min(1, `${header.display} is required`);
+      }
+    });
+    schema = schema.extend(dynamicFields);
+  }
+
+  return schema;
+}
