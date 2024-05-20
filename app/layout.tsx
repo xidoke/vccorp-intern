@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body suppressHydrationWarning={true} className={`${inter.className} antialiased` }>
-        <main>{children}</main>
+        <main className="h-screen">{children}</main>
         <Toaster />
       </body>
     </html>
