@@ -27,7 +27,7 @@ export const {
                 const parsedCredentials = LoginSchema.safeParse(credentials);
                 if (parsedCredentials.success) {
                     const {username, password} = parsedCredentials.data;
-                    const user = await getUserFromDb(username, password);
+                    const user = await getUserFromDb(username);
                     if (!user) return null;
                     const passwordsMatch = await bcrypt.compare(password, user.password!!);
 

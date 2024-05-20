@@ -261,7 +261,7 @@ export async function editAdRate(data: {
     await Promise.all(cellPromises);
 }
 
-export async function getUserFromDb(username: string, password: string) {
+export async function getUserFromDb(username: string) {
     try {
         return await db.user.findUnique({
             where: {

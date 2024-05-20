@@ -25,6 +25,7 @@ import { deleteAdRate } from '@/actions/ad-rate';
 import { Data, TypeIncludeHeaders } from '@/lib/definetions';
 import { EditAdRateForm } from '@/components/form-edit-ad-rate';
 
+
 interface ActionMenuProps {
   item: Data;
   type: TypeIncludeHeaders;
@@ -34,6 +35,7 @@ const ActionMenu = ({ item, type }: ActionMenuProps) => {
   const handleDelete = async () => {
     try {
       await deleteAdRate(item);
+      window.location.reload()
     } catch (e) {
       console.error(e);
       console.log('Failed to delete ad rate');
