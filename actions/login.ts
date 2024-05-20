@@ -1,10 +1,9 @@
 'use server';
 
-import {LoginSchema, RegisterSchema} from '@/schemas';
-import bcrypt from "bcryptjs";
-import {createUserInDb, getUserByEmail, getUserByUsername} from "@/lib/data";
-import {revalidatePath} from "next/cache";
-import {redirect} from "next/navigation";
+import { LoginSchema } from '@/schemas';
+import { signIn } from '@/auth';
+import { redirect } from 'next/navigation';
+
 export const login = async (values: any) => {
   const validateFields = LoginSchema.safeParse(values);
 
@@ -14,24 +13,8 @@ export const login = async (values: any) => {
   return { success: 'success' };
 };
 
-export const register = async (values: any) => {
-    const validateFields = RegisterSchema.safeParse(values);
-
-    if (!validateFields.success) {
-        return { error: 'Invalid fields' };
-    }
-    const { username, password, email} = validateFields.data;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const existingUser = await getUserByEmail(email)
-    if (existingUser) {
-        return { error: 'Email already in use!' };
-    }
-    const existingUsername = await getUserByUsername(username)
-    if (existingUsername) {
-        return { error: 'Username already in use!' };
-    }
-    await createUserInDb(email, username, hashedPassword)
-
-    // TODO: Send email verification
-    return { success: 'User created' };
-}
+export const actionSignIn = async (provider: string) => {
+  await signIn(provider).then(() => {
+    redirect('/test');
+  });
+};

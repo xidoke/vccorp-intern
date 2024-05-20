@@ -1,4 +1,3 @@
-'use client';
 import React from 'react';
 import {
   Card,
@@ -37,7 +36,7 @@ export const CardWrapper = ({
       <CardContent>{children}</CardContent>
       {showSocial && (
         <CardFooter className="flex flex-col items-center">
-          <div className="flex w-full items-center text-gray-400 mb-3">
+          <div className="mb-3 flex w-full items-center text-gray-400">
             <div className="w-full border border-gray-200"></div>
             <p className="mx-2">or</p>
             <div className="w-full border border-gray-200"></div>

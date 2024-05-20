@@ -1,17 +1,17 @@
 import React from 'react';
-import {ExclamationTriangleIcon} from "@heroicons/react/24/outline";
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 interface FormErrorProps {
-    message? : string
+  message?: string;
 }
-const FormError = ({ message } : FormErrorProps) => {
-    if (!message) return null
-    return (
-        <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive">
-            <ExclamationTriangleIcon className="h-4 w-4"/>
-            <span>{message}</span>
-        </div>
-    );
+const FormError = ({ message }: FormErrorProps) => {
+  if (!message) return null;
+  return (
+    <div className="flex items-center gap-x-2 rounded-md bg-destructive/15 p-3 text-sm text-destructive">
+      <ExclamationTriangleIcon className="h-4 w-4" />
+      <span>{message}</span>
+    </div>
+  );
 };
 
 export default FormError;

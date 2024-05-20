@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useState, useTransition} from 'react';
+import React, { useState, useTransition } from 'react';
 import { CardWrapper } from '@/app/ui/auth/card-wrapper';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -18,15 +18,15 @@ import {
 } from '@/components/ui/form';
 import { login } from '@/actions/login';
 import { LoaderCircle } from 'lucide-react';
-import {useToast} from "@/components/ui/use-toast";
-import FormError from "@/app/ui/auth/form-error";
-import FormSuccess from "@/app/ui/auth/form-success";
-import {deleteAdRate} from "@/actions/ad-rate";
+import { useToast } from '@/components/ui/use-toast';
+import FormError from '@/app/ui/auth/form-error';
+import FormSuccess from '@/app/ui/auth/form-success';
+import { deleteAdRate } from '@/actions/ad-rate';
 
 const LoginForm = () => {
-  const [ isPending, startTransition ] = useTransition();
-  const [ error, setError ] = useState<string | undefined>('');
-  const [ success, setSuccess ] = useState<string | undefined>('');
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | undefined>('');
+  const [success, setSuccess] = useState<string | undefined>('');
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -38,13 +38,12 @@ const LoginForm = () => {
   const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
     setError('');
     setSuccess('');
-    startTransition( ()=> {
-      login(values).then((data ) => {
-        setError(data.error)
-        setSuccess(data.success)
-      })
-    })
-
+    startTransition(() => {
+      login(values).then((data) => {
+        setError(data.error);
+        setSuccess(data.success);
+      });
+    });
   };
 
   return (
@@ -94,7 +93,7 @@ const LoginForm = () => {
           <FormSuccess message={success} />
           {form.formState.isSubmitting ? (
             <Button type="submit" className="w-full" disabled>
-              <LoaderCircle className="animate-spin"/>
+              <LoaderCircle className="animate-spin" />
               Login
             </Button>
           ) : (

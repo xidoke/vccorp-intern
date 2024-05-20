@@ -1,11 +1,11 @@
 'use client';
 
 import { Data, TypeIncludeHeaders } from '@/lib/definetions';
-
-import { createFormSchema } from '@/schemas';
+import { createEditFormSchema } from '@/schemas';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ObjectId } from 'bson';
 import {
   Select,
   SelectContent,
@@ -28,6 +28,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { DialogClose } from '@/components/ui/dialog';
+import { updateAdRate } from '@/actions/ad-rate';
+import { useToast } from '@/components/ui/use-toast';
 
 export function EditAdRateForm({
   data,
@@ -36,32 +38,66 @@ export function EditAdRateForm({
   data: Data;
   type: TypeIncludeHeaders;
 }) {
-  const formSchema = createFormSchema(type);
+  const formSchema = createEditFormSchema(type);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      id: data.id,
       typeId: type.id,
+      websiteId: data.website.id,
       website: data.website.name,
+      positionId: data.position.id,
       position: data.position.name,
       dimension: data.position.dimension,
       platform: data.position.platform,
-      demoList: data.position.demoList,
+      demoList: data.position.demoList.map((demo) => ({
+        id: demo.id,
+        display: demo.display,
+        url: demo.url,
+      })),
     },
   });
+  const { toast } = useToast();
+
+  type.headers.forEach((header) => {
+    if (!form.getValues()[header.id]) {
+      form.setValue(
+        header.id,
+        data.cells.find((cell) => cell.headerId === header.id)?.value,
+      );
+    }
+  });
+
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: 'demoList',
   });
 
-  function onSubmit() {
-    console.log(form.getValues());
-    const dialogCloseButton = document.querySelector(
-      '.dialog-close-button',
-    ) as HTMLButtonElement;
-    if (dialogCloseButton) {
-      dialogCloseButton.click();
+  const generateTemporaryId = () => {
+    return new ObjectId().toString();
+  };
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      await updateAdRate(values);
+      const dialogCloseButton = document.querySelector(
+        '.dialog-close-button',
+      ) as HTMLButtonElement;
+      if (dialogCloseButton) {
+        dialogCloseButton.click();
+      }
+      toast({
+        title: 'Success',
+        description: 'Data updated successfully',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to update data',
+        variant: 'destructive',
+      });
     }
-  }
+  };
 
   return (
     <>
@@ -70,6 +106,28 @@ export function EditAdRateForm({
           <FormField
             control={form.control}
             name="typeId"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input type="hidden" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="websiteId"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input type="hidden" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="positionId"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
@@ -117,7 +175,6 @@ export function EditAdRateForm({
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
             name="platform"
@@ -146,9 +203,21 @@ export function EditAdRateForm({
               </FormItem>
             )}
           />
-
           {fields.map((item, index) => (
             <div key={item.id} className="flex space-x-4">
+              {item.id && (
+                <FormField
+                  control={form.control}
+                  name={`demoList.${index}.id`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="hidden" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              )}
               <FormField
                 control={form.control}
                 name={`demoList.${index}.display`}
@@ -167,57 +236,60 @@ export function EditAdRateForm({
                 name={`demoList.${index}.url`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>URL</FormLabel>
+                    <FormLabel>Demo URL</FormLabel>
                     <FormControl>
-                      <Input placeholder="URL" {...field} />
+                      <Input placeholder="Demo URL" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="button" onClick={() => remove(index)}>
+              <Button
+                type="button"
+                onClick={() => remove(index)}
+                className="self-end"
+              >
                 Remove
               </Button>
             </div>
           ))}
-
           <Button
             type="button"
-            onClick={() => append({ display: '', url: '' })}
+            onClick={() =>
+              append({ id: generateTemporaryId(), display: '', url: '' })
+            } // Generate temporary id for new demo
           >
             Add Demo
           </Button>
-
-          {type &&
-            type.headers.map((header) => (
-              <FormField
-                key={header.id}
-                control={form.control}
-                name={header.id}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{header.display}</FormLabel>
-                    <FormControl>
-                      {header.datatype === 'number' ? (
-                        <Input
-                          placeholder={header.display}
-                          {...field}
-                          type="number"
-                        />
-                      ) : (
-                        header.datatype === 'string' && (
-                          <Textarea placeholder={header.display} {...field} />
-                        )
-                      )}
-                    </FormControl>
-                    <FormDescription>
-                      datatype of {header.display} is {header.datatype}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ))}
+          {type.headers.map((header) => (
+            <FormField
+              key={header.id}
+              control={form.control}
+              name={header.id}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{header.display}</FormLabel>
+                  <FormControl>
+                    {header.datatype === 'number' ? (
+                      <Input
+                        placeholder={header.display}
+                        {...field}
+                        type="number"
+                      />
+                    ) : (
+                      header.datatype === 'string' && (
+                        <Textarea placeholder={header.display} {...field} />
+                      )
+                    )}
+                  </FormControl>
+                  <FormDescription>
+                    datatype of {header.display} is {header.datatype}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ))}
           <Button type="submit" disabled={form.formState.isSubmitting}>
             {form.formState.isSubmitting ? 'Submitting...' : 'Submit'}
           </Button>

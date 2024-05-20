@@ -29,10 +29,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { createAdRate } from '@/actions/ad-rate';
 import SubmitButton from '@/components/submit-button';
 import { useToast } from '@/components/ui/use-toast';
-import {revalidatePath} from "next/cache";
-import {usePathname, useRouter} from "next/navigation";
-import {createFormSchema} from "@/schemas";
-
+import { revalidatePath } from 'next/cache';
+import { usePathname, useRouter } from 'next/navigation';
+import { createFormSchema } from '@/schemas';
 
 export function AddAdRateForm({
   types,
@@ -41,7 +40,6 @@ export function AddAdRateForm({
   types: TypeIncludeHeaders[];
   initType?: TypeIncludeHeaders;
 }) {
-
   const [selectedType, setSelectedType] = useState<TypeIncludeHeaders | null>(
     initType ? initType : types[0],
   );
