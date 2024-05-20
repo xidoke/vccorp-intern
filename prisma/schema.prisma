@@ -104,7 +104,6 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  @@unique([username], map: "unique_username_nullable") // This unique constraint will be enforced by MongoDB
 }
 
 model Account {
