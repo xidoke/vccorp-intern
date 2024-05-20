@@ -1,6 +1,5 @@
 import React from 'react';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { CheckCircle } from 'lucide-react';
 
 interface FormSuccessProps {
   message?: string;

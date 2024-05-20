@@ -1,5 +1,4 @@
 import React from 'react';
-import { Type } from '@prisma/client';
 import { fetchAllType, fetchRowWithTypeId } from '@/lib/data';
 import AdRateTable from '@/app/ui/ad-rate/ad-rate-table';
 

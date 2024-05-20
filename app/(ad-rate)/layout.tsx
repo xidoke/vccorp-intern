@@ -1,4 +1,5 @@
 import SideNav from '@/app/ui/ad-rate/sidebar';
+import React from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

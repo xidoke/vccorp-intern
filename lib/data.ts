@@ -1,15 +1,6 @@
-import { Platform, PrismaClient } from '@prisma/client';
+import { Platform } from '@prisma/client';
 import { TypeIncludeHeaders } from '@/lib/definetions';
 import { db } from '@/lib/db';
-export async function fetchAdRateTypesCount(): Promise<number> {
-  try {
-    return await db.type.count();
-  } catch (e) {
-    console.error(e);
-    console.log('Failed to fetch ad rate types count');
-    return 0;
-  }
-}
 
 export async function fetchAllType(): Promise<TypeIncludeHeaders[]> {
   try {
@@ -179,7 +170,7 @@ export async function addAdRate(data: {
 
 export async function getUserFromDb(username: string, password: string) {
   try {
-    return await db.user.findMany({
+    return await db.user.findUnique({
       where: {
         username: username,
       },

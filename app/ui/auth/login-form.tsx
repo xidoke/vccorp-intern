@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
+import React, { useState } from 'react';
 import { CardWrapper } from '@/app/ui/auth/card-wrapper';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -16,33 +16,24 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { login } from '@/actions/login';
+import { authenticate } from '@/actions/login';
 import { LoaderCircle } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
 import FormError from '@/app/ui/auth/form-error';
-import FormSuccess from '@/app/ui/auth/form-success';
-import { deleteAdRate } from '@/actions/ad-rate';
 
 const LoginForm = () => {
-  const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>('');
-  const [success, setSuccess] = useState<string | undefined>('');
-  const form = useForm<z.infer<typeof LoginSchema>>({
+    const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
       username: '',
       password: '',
     },
   });
-  const { toast } = useToast();
-  const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
+
+  const onSubmit = async (formData: z.infer<typeof LoginSchema>) => {
     setError('');
-    setSuccess('');
-    startTransition(() => {
-      login(values).then((data) => {
-        setError(data.error);
-        setSuccess(data.success);
-      });
+    await authenticate(formData).then((data) => {
+      setError(data?.error);
     });
   };
 
@@ -90,7 +81,6 @@ const LoginForm = () => {
             />
           </div>
           <FormError message={error} />
-          <FormSuccess message={success} />
           {form.formState.isSubmitting ? (
             <Button type="submit" className="w-full" disabled>
               <LoaderCircle className="animate-spin" />
