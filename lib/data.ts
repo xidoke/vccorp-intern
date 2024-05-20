@@ -333,7 +333,7 @@ export async function getUserByEmail(email: string) {
 
 export async function getUserByUsername(username: string) {
     try {
-        return await db.user.findUnique({
+        return await db.user.findFirst({
             where: {
                 username: username,
             },
