@@ -5,7 +5,7 @@ import React from 'react';
 import { Toaster } from '@/components/ui/toaster';
 import { Analytics } from "@vercel/analytics/react"
 const inter = Inter({ subsets: ['latin'] });
-
+import { SpeedInsights } from "@vercel/speed-insights/next"
 export const metadata: Metadata = {
   title: 'VCCorp',
   description: 'CRUD application for VCCorp',
@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body suppressHydrationWarning={true} className={`${inter.className} antialiased` }>
         <main className="h-screen">{children}
-            <Analytics/></main>
+            <Analytics/><SpeedInsights /></main>
         <Toaster />
       </body>
     </html>
