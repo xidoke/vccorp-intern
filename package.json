@@ -30,6 +30,7 @@
     "@reduxjs/toolkit": "^2.2.3",
     "@tanstack/react-form": "^0.19.2",
     "@tanstack/react-table": "^8.16.0",
+    "@vercel/analytics": "^1.2.2",
     "@vercel/style-guide": "^6.0.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
