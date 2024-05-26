@@ -10,7 +10,8 @@ export default {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith('/home') || nextUrl.pathname.startsWith('/form') || nextUrl.pathname === '/'
+      const isOnDashboard = nextUrl.pathname.startsWith('/home') || nextUrl.pathname.startsWith('/form')
+          || nextUrl.pathname === '/admin'
       if (isOnDashboard) {
         return isLoggedIn;
          // Redirect unauthenticated users to login page

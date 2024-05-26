@@ -29,11 +29,13 @@ import {DataTableViewOptions} from "@/components/column-toggle";
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
+    search?: string;
 }
 
 export function DataTable<TData, TValue>({
                                              columns,
                                              data,
+    search
                                          }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -59,18 +61,23 @@ export function DataTable<TData, TValue>({
     });
     return (
         <div>
-            <div className="flex items-center py-4">
-                <Input
-                    placeholder="Filter website..."
-                    value={(table.getColumn("website")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn("website")?.setFilterValue(event.target.value)
-                    }
-                    className="max-w-sm"
-                />
-                <DataTableViewOptions table={table} />
-            </div>
-            <DataTablePagination table={table} />
+            {
+                search && (
+                    <div className="flex items-center py-4">
+                        <Input
+                            placeholder={`Search ${search}`}
+                            value={(table.getColumn(search)?.getFilterValue() as string) ?? ""}
+                            onChange={(event) =>
+                                table.getColumn(search)?.setFilterValue(event.target.value)
+                            }
+                            className="max-w-sm"
+                        />
+                        <DataTableViewOptions table={table}/>
+                    </div>
+                )
+            }
+
+            <DataTablePagination table={table}/>
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>

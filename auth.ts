@@ -39,5 +39,20 @@ export const {
             },
         }),
     ],
-
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                // @ts-ignore
+                token.isSuperAdmin = user.isSuperAdmin;
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            if (token) {
+                // @ts-ignore
+                session.user.isSuperAdmin = token.isSuperAdmin;
+            }
+            return session;
+        },
+    },
 });

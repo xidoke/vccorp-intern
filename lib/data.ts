@@ -63,6 +63,65 @@ export async function fetchRowWithTypeId(typeid: string) {
     }
 }
 
+export async function fetchRowWithTypeIdAndSearch(typeid: string, search: string) {
+    try {
+        return await db.row.findMany({
+            where: {
+                typeId: typeid,
+                OR: [
+                    {
+                        website: {
+                            name: {
+                                contains: search,
+                            },
+                        },
+                    },
+                    {
+                        position: {
+                            name: {
+                                contains: search,
+                            },
+                        },
+                    },
+                    {
+                        position: {
+                            dimension: {
+                                contains: search,
+                            },
+                        },
+                    },
+                    {
+                        cells: {
+                            some: {
+                                value: {
+                                    contains: search,
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+            include: {
+                website: true,
+                position: {
+                    include: {
+                        demoList: true,
+                    },
+                },
+                cells: {
+                    include: {
+                        // header: true,
+                    },
+                },
+            },
+        });
+    } catch (e) {
+        console.error(e);
+        console.log('Failed to fetch ad rate with type');
+        return [];
+    }
+}
+
 export async function deleteRowAndCells(rowId: string) {
     try {
         // Delete cells that belong to the row
@@ -341,6 +400,30 @@ export async function getUserByUsername(username: string) {
     } catch (e) {
         console.error(e);
         console.log('Failed to get user by username');
+        return null;
+    }
+}
+
+export async function getAllUsers() {
+    try {
+        return await db.user.findMany();
+    } catch (e) {
+        console.error(e);
+        console.log('Failed to get all users');
+        return [];
+    }
+}
+
+export async function deleteUser(email: string) {
+    try {
+        return await db.user.delete({
+            where: {
+                email: email,
+            },
+        });
+    } catch (e) {
+        console.error(e);
+        console.log('Failed to delete user');
         return null;
     }
 }

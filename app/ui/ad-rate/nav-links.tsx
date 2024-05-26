@@ -2,10 +2,12 @@
 import {
   HomeIcon,
   DocumentDuplicateIcon,
+    UsersIcon
 } from '@heroicons/react/24/outline';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import clsx from 'clsx';
+import {useSession} from "next-auth/react";
 
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
@@ -15,17 +17,28 @@ const links = [
     name: 'Add',
     href: '/form/type',
     icon: DocumentDuplicateIcon,
+    isSuperAdmin: true,
   },
+  {
+    name: 'Admin',
+    href: '/admin',
+    icon: UsersIcon,
+    isSuperAdmin: true,
+  }
+
   // { name: 'Customers', href: '/dashboard/customers', icon: UserGroupIcon },
 ];
 
 export default function NavLinks() {
   const pathname = usePathname();
-
+  const session = useSession();
+  // @ts-ignore
+  const isSuperAdmin = session?.data?.user.isSuperAdmin;
   return (
     <>
       {links.map((link) => {
         const LinkIcon = link.icon;
+        if (link.isSuperAdmin && !isSuperAdmin) return null;
         return (
           <Link
             key={link.name}
