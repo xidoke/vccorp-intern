@@ -16,9 +16,9 @@ datasource db {
 model Row {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   websiteId  String   @db.ObjectId
-  website    Website  @relation(fields: [websiteId], references: [id])
+  website    Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
   positionId String   @db.ObjectId
-  position   Position @relation(fields: [positionId], references: [id])
+  position   Position @relation(fields: [positionId], references: [id], onDelete: Cascade)
   typeId     String   @db.ObjectId
   type       Type     @relation(fields: [typeId], references: [id])
   cells      Cell[]
@@ -36,7 +36,7 @@ model Website {
 model Position {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   websiteId String   @db.ObjectId
-  website   Website  @relation(fields: [websiteId], references: [id])
+  website   Website  @relation(fields: [websiteId], references: [id], onDelete: Cascade)
   typeId    String   @db.ObjectId
   name      String
   dimension String
@@ -48,10 +48,10 @@ model Position {
 model Cell {
   id       String @id @default(auto()) @map("_id") @db.ObjectId
   headerId String @db.ObjectId
-  header   Header @relation(fields: [headerId], references: [id])
+  header   Header @relation(fields: [headerId], references: [id], onDelete: Cascade)
   value    String
   rowId    String @db.ObjectId
-  row      Row    @relation(fields: [rowId], references: [id])
+  row      Row    @relation(fields: [rowId], references: [id], onDelete: Cascade)
 
   @@unique([headerId, rowId])
 }
@@ -61,7 +61,7 @@ model Demo {
   display    String
   url        String
   positionId String   @db.ObjectId
-  position   Position @relation(fields: [positionId], references: [id])
+  position   Position @relation(fields: [positionId], references: [id], onDelete: Cascade)
 }
 
 model Type {
@@ -77,7 +77,7 @@ model Header {
   key      String
   datatype String
   typeId   String @db.ObjectId
-  type     Type   @relation(fields: [typeId], references: [id])
+  type     Type   @relation(fields: [typeId], references: [id], onDelete: Cascade)
   cells    Cell[]
 }
 

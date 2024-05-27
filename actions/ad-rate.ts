@@ -8,6 +8,7 @@ export const deleteAdRate = async (item: any) => {
   try {
     await deleteRowAndCells(item.id);
     console.log(`Ad rate ${item.id} deleted`);
+    revalidatePath('/home')
   } catch (e) {
     console.error(e);
     console.log('Failed to delete ad rate');

@@ -265,33 +265,26 @@ export async function editAdRate(data: {
                 name: data.position,
                 dimension: data.dimension,
                 platform: data.platform,
-                demoList: {
-                    deleteMany: {}
-                    ,
-                    createMany: {
-                        data: data.demoList.map(demo => ({
-                            display: demo.display,
-                            url: demo.url,
-                        }))
-                    }
-                }
             }
         }
     )
     await db.demo.deleteMany({
         where: {
-            positionId: position.id
+            positionId: row.positionId
         }
     })
-
-    await db.demo.createMany({
-            data: data.demoList.map(demo => ({
-                display: demo.display,
-                url: demo.url,
-                positionId: position.id
-            }))
-        }
-    )
+    console.log("demoList:")
+    console.dir(data.demoList)
+    if (data.demoList.length > 0) {
+        await db.demo.createMany({
+                data: data.demoList.map(demo => ({
+                    display: demo.display,
+                    url: demo.url,
+                    positionId: position.id
+                }))
+            }
+        )
+    }
 
     const cellPromises = Object.keys(data)
         .filter(
@@ -304,19 +297,29 @@ export async function editAdRate(data: {
                 key !== 'demoList' &&
                 key !== 'typeId',
         )
-        .map((key) =>
-            db.cell.update({
-                where: {
-                    headerId_rowId: {
-                        headerId: key,
-                        rowId: row.id
+        .map(async (key) => {
+            try {
+                await db.cell.update({
+                    where: {
+                        headerId_rowId: {
+                            headerId: key,
+                            rowId: row.id
+                        }
+                    },
+                    data: {
+                        value: data[key].toString(),
                     }
-                },
-                data: {
-                    value: data[key].toString(),
-                }
-            }),
-        );
+                })
+            } catch (e) {
+                await db.cell.create({
+                    data: {
+                        headerId: key,
+                        value: data[key].toString(),
+                        rowId: row.id,
+                    },
+                });
+            }
+        });
     await Promise.all(cellPromises);
 }
 

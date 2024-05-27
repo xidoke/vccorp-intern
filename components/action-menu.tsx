@@ -35,7 +35,6 @@ const ActionMenu = ({ item, type }: ActionMenuProps) => {
   const handleDelete = async () => {
     try {
       await deleteAdRate(item);
-      window.location.reload()
     } catch (e) {
       console.error(e);
       console.log('Failed to delete ad rate');
